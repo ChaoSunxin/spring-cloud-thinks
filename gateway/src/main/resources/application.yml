@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: spring-cloud-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: simple_route
+          uri: lb://backend-service #http://backend-resources:8082/api
+          predicates:
+            - Path=/api/**
+          filters:
+            - TokenRelay=
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  security:
+    oauth2:
+      client:
+        registration:
+          gateway:
+            provider: my-provider
+            client-id: spring-gateway
+            client-secret: en06WWEfzuSDXC9JkCwGAG0Y9q9VlKXp
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://backend-gateway-client:8083/login/oauth2/code/{registrationId}"
+            scope: openid, message.read
+        provider:
+          my-provider:
+            issuer-uri: http://backend-keycloak-auth:8080/auth/realms/spring_cloud_gateway
+server:
+  port: 8083
+
+logging:
+  level:
+    org.springframework.security: trace
+  pattern:
+    console: '%d{dd-MM-yyyy HH:mm:ss} %magenta([%thread]) %highlight(%-5level) %logger.%M - %msg%n'
+
+
+
+
+
+
+
